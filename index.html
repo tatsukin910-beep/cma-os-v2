@@ -1,54 +1,938 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CMA OS v2 - Complex Multilayered Abuse Theory</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-    <style>
-        body { font-family: system-ui; }
-        .layer { border-left: 5px solid #0066cc; padding-left: 1rem; margin-bottom: 1.5rem; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a14">
+  <link rel="manifest" href="manifest.json">
+  <title>Cognitive CMA OS v2</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0a0a14;
+      --surface: #1a1a24;
+      --border: #2a2a34;
+      --text: #e8e8f0;
+      --text-dim: #a8a8b8;
+      --accent: #7c7cff;
+      --accent-alt: #ff7c9c;
+      --danger: #ff5c5c;
+      --success: #5cff7c;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    html, body, #app {
+      height: 100%;
+      width: 100%;
+    }
+
+    /* Layout */
+    #app {
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    header p {
+      font-size: 0.875rem;
+      color: var(--text-dim);
+    }
+
+    nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: var(--border);
+      border-color: var(--accent);
+    }
+
+    button.active {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+
+    button.danger {
+      border-color: var(--danger);
+    }
+
+    button.danger:hover {
+      background: var(--danger);
+      color: var(--bg);
+    }
+
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Views */
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    /* Form */
+    form {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+
+    input[type="text"],
+    input[type="datetime-local"],
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      font-family: inherit;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 8rem;
+      font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(124, 124, 255, 0.1);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    input[type="checkbox"] {
+      width: 1.25rem;
+      height: 1.25rem;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    /* Incident card */
+    .incident-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.2s;
+    }
+
+    .incident-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(124, 124, 255, 0.2);
+    }
+
+    .incident-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.75rem;
+    }
+
+    .incident-date {
+      font-size: 0.875rem;
+      color: var(--text-dim);
+      font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+    }
+
+    .incident-people {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+    }
+
+    .incident-description {
+      margin-bottom: 1rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .layer-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+
+    .layer-tag {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--border);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .layer-tag.institutional {
+      background: rgba(124, 124, 255, 0.2);
+      color: #b0b0ff;
+    }
+
+    .layer-tag.practitioner {
+      background: rgba(255, 124, 156, 0.2);
+      color: #ffb0c8;
+    }
+
+    .layer-tag.environmental {
+      background: rgba(92, 255, 124, 0.2);
+      color: #b0ffb8;
+    }
+
+    .incident-actions {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .incident-actions button {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    /* Dashboard */
+    .dashboard-section {
+      margin-bottom: 2rem;
+    }
+
+    .dashboard-section h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    .layer-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .layer-section h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--border);
+      border-radius: 0.375rem;
+    }
+
+    .layer-section.institutional h3 {
+      background: rgba(124, 124, 255, 0.15);
+      color: #b0b0ff;
+    }
+
+    .layer-section.practitioner h3 {
+      background: rgba(255, 124, 156, 0.15);
+      color: #ffb0c8;
+    }
+
+    .layer-section.environmental h3 {
+      background: rgba(92, 255, 124, 0.15);
+      color: #b0ffb8;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Export */
+    .export-preview {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-dim);
+    }
+
+    .empty-state p {
+      margin-bottom: 1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      header {
+        padding: 0.75rem;
+      }
+
+      header h1 {
+        font-size: 1rem;
+      }
+
+      nav {
+        gap: 0.25rem;
+      }
+
+      button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+      }
+
+      form {
+        padding: 1rem;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .form-actions button {
+        width: 100%;
+      }
+
+      .checkbox-group {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .incident-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      main {
+        padding: 0.75rem;
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
 </head>
 <body>
-    <main class="container">
-        <h1>CMA OS v2</h1>
-        <p><strong>Complex Multilayered Abuse Theory Operating System</strong></p>
-        
-        <nav>
-            <ul>
-                <li><a href="#core">Core Theory</a></li>
-                <li><a href="#layers">5 Layer Model</a></li>
-                <li><a href="#resources">Resources</a></li>
-            </ul>
-        </nav>
+  <div id="app">
+    <header>
+      <h1>🧠 Cognitive CMA OS v2</h1>
+      <p>Service User Evidence Documentation Tool</p>
+      <nav>
+        <button class="nav-btn active" data-view="log">📝 Log Incident</button>
+        <button class="nav-btn" data-view="timeline">📅 Timeline</button>
+        <button class="nav-btn" data-view="layers">🔍 By Layers</button>
+        <button class="nav-btn" data-view="export">📤 Export</button>
+        <button class="nav-btn danger" id="clearBtn">🗑️ Clear All</button>
+      </nav>
+    </header>
 
-        <section id="core">
-            <h2>Core Theory v1.1</h2>
-            <p>閉鎖環境における虐待の持続構造を説明する概念的フレームワーク。</p>
-            <!-- 詳細は別ファイルや折りたたみで -->
-        </section>
-
-        <section id="layers">
-            <h2>5 Layer Model</h2>
-            <div class="layer">
-                <h3>Layer 1 — Isolation</h3>
-                <p>孤立が外部支援へのアクセスを制限。</p>
+    <main>
+      <div class="container">
+        <!-- Log Incident View -->
+        <div class="view active" id="log">
+          <form id="incidentForm">
+            <div class="form-group">
+              <label for="date">Date & Time</label>
+              <input type="datetime-local" id="date" required>
             </div>
-            <div class="layer">
-                <h3>Layer 2 — Dependency</h3>
-                <p>依存関係が虐待環境を維持。</p>
-            </div>
-            <!-- 他のレイヤーも同様に追加可能 -->
-        </section>
 
-        <section id="resources">
-            <h2>Resources</h2>
-            <p>学術資料、X戦略、個人サイトなど。</p>
-        </section>
+            <div class="form-group">
+              <label for="people">People Involved</label>
+              <input type="text" id="people" placeholder="e.g., practitioner name, staff member, family">
+            </div>
+
+            <div class="form-group">
+              <label>CMA Layers (select all that apply)</label>
+              <div class="checkbox-group">
+                <div class="checkbox-item">
+                  <input type="checkbox" id="layer-institutional" name="layers" value="institutional">
+                  <label for="layer-institutional">Institutional/Administrative</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="layer-practitioner" name="layers" value="practitioner">
+                  <label for="layer-practitioner">Practitioner Judgment</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="layer-environmental" name="layers" value="environmental">
+                  <label for="layer-environmental">Environmental/Visibility</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="description">What Happened?</label>
+              <textarea id="description" placeholder="Describe what happened. Include: what was said/done, what you felt in your body, what wasn't said or acknowledged." required></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="reset" id="resetBtn">Clear</button>
+              <button type="submit" style="background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600;">Save Incident</button>
+            </div>
+          </form>
+
+          <div id="recentIncidents"></div>
+        </div>
+
+        <!-- Timeline View -->
+        <div class="view" id="timeline">
+          <div class="dashboard-section">
+            <h2>Chronological Record</h2>
+            <div id="timelineContent"></div>
+          </div>
+        </div>
+
+        <!-- By Layers View -->
+        <div class="view" id="layers">
+          <div class="stats" id="layerStats"></div>
+          <div id="layersContent"></div>
+        </div>
+
+        <!-- Export View -->
+        <div class="view" id="export">
+          <div class="dashboard-section">
+            <h2>Structured Evidence Summary</h2>
+            <p style="color: var(--text-dim); font-size: 0.875rem; margin-bottom: 1rem;">
+              This summary is formatted for sharing with practitioners, advocates, or legal representatives.
+            </p>
+            <div id="exportContent"></div>
+          </div>
+        </div>
+      </div>
     </main>
+  </div>
 
-    <script src="sw.js"></script>
+  <script>
+    // ============================================================================
+    // Database Layer (IndexedDB)
+    // ============================================================================
+
+    let db;
+
+    const initDB = async () => {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('CMA_DB', 1);
+
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => {
+          db = req.result;
+          resolve(db);
+        };
+
+        req.onupgradeneeded = (e) => {
+          const database = e.target.result;
+          if (!database.objectStoreNames.contains('incidents')) {
+            const store = database.createObjectStore('incidents', {
+              keyPath: 'id',
+              autoIncrement: true
+            });
+            store.createIndex('date', 'date', { unique: false });
+          }
+        };
+      });
+    };
+
+    const saveIncident = async (incident) => {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(['incidents'], 'readwrite');
+        const store = tx.objectStore('incidents');
+        const req = store.add(incident);
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => resolve(req.result);
+      });
+    };
+
+    const getIncidents = async () => {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(['incidents'], 'readonly');
+        const store = tx.objectStore('incidents');
+        const index = store.index('date');
+        const req = index.getAll();
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => resolve(req.result);
+      });
+    };
+
+    const deleteIncident = async (id) => {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(['incidents'], 'readwrite');
+        const store = tx.objectStore('incidents');
+        const req = store.delete(id);
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => resolve();
+      });
+    };
+
+    const clearAll = async () => {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(['incidents'], 'readwrite');
+        const store = tx.objectStore('incidents');
+        const req = store.clear();
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => resolve();
+      });
+    };
+
+    // ============================================================================
+    // UI Rendering
+    // ============================================================================
+
+    const formatDate = (dateStr) => {
+      const date = new Date(dateStr);
+      return date.toLocaleString('ja-JP', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+
+    const renderIncidentCard = (incident, showDelete = true) => {
+      const layerLabels = {
+        institutional: 'Institutional/Administrative',
+        practitioner: 'Practitioner Judgment',
+        environmental: 'Environmental/Visibility'
+      };
+
+      return `
+        <div class="incident-card">
+          <div class="incident-header">
+            <span class="incident-date">${formatDate(incident.date)}</span>
+          </div>
+          ${incident.people ? `<div class="incident-people">People: ${incident.people}</div>` : ''}
+          <div class="layer-tags">
+            ${incident.layers.map(l => `<span class="layer-tag ${l}">${layerLabels[l]}</span>`).join('')}
+          </div>
+          <div class="incident-description">${incident.description}</div>
+          ${showDelete ? `<div class="incident-actions">
+            <button class="delete-btn" data-id="${incident.id}">Delete</button>
+          </div>` : ''}
+        </div>
+      `;
+    };
+
+    const renderRecentIncidents = async () => {
+      const incidents = await getIncidents();
+      const container = document.getElementById('recentIncidents');
+
+      if (incidents.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No incidents logged yet.</p></div>';
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="dashboard-section">
+          <h2>Recent Entries</h2>
+          ${incidents.slice(-3).reverse().map(i => renderIncidentCard(i, true)).join('')}
+        </div>
+      `;
+
+      // Attach delete handlers
+      container.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const id = parseInt(e.target.dataset.id);
+          if (confirm('Delete this incident?')) {
+            await deleteIncident(id);
+            renderRecentIncidents();
+            renderAllViews();
+          }
+        });
+      });
+    };
+
+    const renderTimeline = async () => {
+      const incidents = await getIncidents();
+      const container = document.getElementById('timelineContent');
+
+      if (incidents.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No incidents recorded.</p></div>';
+        return;
+      }
+
+      container.innerHTML = incidents
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .map(i => renderIncidentCard(i, false))
+        .join('');
+    };
+
+    const renderLayerView = async () => {
+      const incidents = await getIncidents();
+      const statsContainer = document.getElementById('layerStats');
+      const contentContainer = document.getElementById('layersContent');
+
+      if (incidents.length === 0) {
+        statsContainer.innerHTML = '';
+        contentContainer.innerHTML = '<div class="empty-state"><p>No incidents recorded.</p></div>';
+        return;
+      }
+
+      // Count by layer
+      const layerCounts = {
+        institutional: 0,
+        practitioner: 0,
+        environmental: 0
+      };
+
+      incidents.forEach(incident => {
+        incident.layers.forEach(layer => {
+          layerCounts[layer]++;
+        });
+      });
+
+      statsContainer.innerHTML = `
+        <div class="stat-card">
+          <div class="stat-number">${layerCounts.institutional}</div>
+          <div class="stat-label">Institutional</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${layerCounts.practitioner}</div>
+          <div class="stat-label">Practitioner</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${layerCounts.environmental}</div>
+          <div class="stat-label">Environmental</div>
+        </div>
+      `;
+
+      // Group by layer
+      const layerLabels = {
+        institutional: 'Institutional/Administrative',
+        practitioner: 'Practitioner Judgment',
+        environmental: 'Environmental/Visibility'
+      };
+
+      let html = '';
+      ['institutional', 'practitioner', 'environmental'].forEach(layer => {
+        const layerIncidents = incidents.filter(i => i.layers.includes(layer));
+        if (layerIncidents.length > 0) {
+          html += `
+            <div class="layer-section ${layer}">
+              <h3>${layerLabels[layer]} (${layerIncidents.length})</h3>
+              ${layerIncidents.map(i => renderIncidentCard(i, false)).join('')}
+            </div>
+          `;
+        }
+      });
+
+      contentContainer.innerHTML = html;
+    };
+
+    const generateExportText = async () => {
+      const incidents = await getIncidents();
+
+      if (incidents.length === 0) {
+        return '(No incidents recorded)';
+      }
+
+      const layerLabels = {
+        institutional: 'Institutional/Administrative',
+        practitioner: 'Practitioner Judgment',
+        environmental: 'Environmental/Visibility'
+      };
+
+      let text = '═══════════════════════════════════════════════════════════\n';
+      text += 'CMA EVIDENCE DOCUMENTATION\n';
+      text += 'Generated: ' + new Date().toLocaleString('ja-JP') + '\n';
+      text += '═══════════════════════════════════════════════════════════\n\n';
+
+      text += 'SUMMARY\n';
+      text += '───────────────────────────────────────────────────────────\n';
+      text += `Total Incidents: ${incidents.length}\n`;
+      text += `Date Range: ${formatDate(incidents[0].date)} to ${formatDate(incidents[incidents.length - 1].date)}\n\n`;
+
+      // Count by layer
+      const layerCounts = {
+        institutional: 0,
+        practitioner: 0,
+        environmental: 0
+      };
+
+      incidents.forEach(incident => {
+        incident.layers.forEach(layer => {
+          layerCounts[layer]++;
+        });
+      });
+
+      text += 'By Layer:\n';
+      text += `  • Institutional/Administrative: ${layerCounts.institutional}\n`;
+      text += `  • Practitioner Judgment: ${layerCounts.practitioner}\n`;
+      text += `  • Environmental/Visibility: ${layerCounts.environmental}\n\n`;
+
+      text += '═══════════════════════════════════════════════════════════\n';
+      text += 'DETAILED RECORD\n';
+      text += '═══════════════════════════════════════════════════════════\n\n';
+
+      incidents.forEach((incident, idx) => {
+        text += `[${idx + 1}] ${formatDate(incident.date)}\n`;
+        if (incident.people) {
+          text += `People: ${incident.people}\n`;
+        }
+        text += `Layers: ${incident.layers.map(l => layerLabels[l]).join(' + ')}\n`;
+        text += `\n${incident.description}\n`;
+        text += '\n───────────────────────────────────────────────────────────\n\n';
+      });
+
+      text += '═══════════════════════════════════════════════════════════\n';
+      text += 'This document is private. It exists to help you articulate\n';
+      text += 'patterns to someone with power to intervene.\n';
+      text += '═══════════════════════════════════════════════════════════\n';
+
+      return text;
+    };
+
+    const renderExport = async () => {
+      const container = document.getElementById('exportContent');
+      const exportText = await generateExportText();
+
+      container.innerHTML = `
+        <div class="export-preview" id="exportPreview">${exportText}</div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button id="copyBtn" style="flex: 1; background: var(--accent); color: var(--bg); border-color: var(--accent);">📋 Copy to Clipboard</button>
+          <button id="downloadBtn" style="flex: 1; background: var(--accent); color: var(--bg); border-color: var(--accent);">💾 Download as Text</button>
+        </div>
+      `;
+
+      document.getElementById('copyBtn').addEventListener('click', async () => {
+        const text = await generateExportText();
+        await navigator.clipboard.writeText(text);
+        alert('Copied to clipboard');
+      });
+
+      document.getElementById('downloadBtn').addEventListener('click', async () => {
+        const text = await generateExportText();
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `CMA_Evidence_${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    };
+
+    const renderAllViews = async () => {
+      await renderRecentIncidents();
+      await renderTimeline();
+      await renderLayerView();
+      await renderExport();
+    };
+
+    // ============================================================================
+    // Event Handlers
+    // ============================================================================
+
+    document.getElementById('incidentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const date = document.getElementById('date').value;
+      const people = document.getElementById('people').value;
+      const description = document.getElementById('description').value;
+      const layers = Array.from(document.querySelectorAll('input[name="layers"]:checked')).map(cb => cb.value);
+
+      if (layers.length === 0) {
+        alert('Please select at least one CMA layer');
+        return;
+      }
+
+      const incident = {
+        date,
+        people,
+        description,
+        layers,
+        created: new Date().toISOString()
+      };
+
+      await saveIncident(incident);
+      document.getElementById('incidentForm').reset();
+
+      // Set default date to now
+      setDefaultDate();
+
+      await renderAllViews();
+      alert('Incident saved.');
+    });
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+        e.target.classList.add('active');
+        const viewId = e.target.dataset.view;
+        document.getElementById(viewId).classList.add('active');
+      });
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', async () => {
+      if (confirm('⚠️ Clear all incidents? This cannot be undone.')) {
+        await clearAll();
+        await renderAllViews();
+        alert('All incidents cleared.');
+      }
+    });
+
+    const setDefaultDate = () => {
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      document.getElementById('date').value = now.toISOString().slice(0, 16);
+    };
+
+    // ============================================================================
+    // Initialization
+    // ============================================================================
+
+    const init = async () => {
+      await initDB();
+      setDefaultDate();
+      await renderAllViews();
+
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+          console.log('SW registration failed:', err);
+        });
+      }
+    };
+
+    init();
+  </script>
 </body>
 </html>

@@ -1,16 +1,28 @@
 {
-  "name": "CMA OS v2",
+  "name": "Cognitive CMA OS v2",
   "short_name": "CMA OS",
-  "description": "Complex Multilayered Abuse Theory Operating System",
-  "start_url": "/index.html",
+  "description": "Service User Evidence Documentation Tool for Complex Multilayered Abuse",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0066cc",
+  "start_url": "./index.html",
+  "scope": "./",
+  "theme_color": "#0a0a14",
+  "background_color": "#0a0a14",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "https://via.placeholder.com/192",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["productivity"],
+  "screenshots": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow"
     }
   ]
 }
